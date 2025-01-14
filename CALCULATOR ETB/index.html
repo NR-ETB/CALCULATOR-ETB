@@ -30,7 +30,7 @@
                 <div class="front-calcu">
 
                     <div class="content-calcu">
-                        <input type="text" id="calcular" placeholder="0" onkeydown="return false;" />
+                        <input type="text" id="calcular" placeholder="0" onkeyup="formatNumber();" onkeydown="return false;" />
 
                         <div class="content-inst">
 
@@ -75,7 +75,7 @@
                             
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button  value="√" onclick="appendValue(this.value)"><img src="View/images/icons/root.png" alt=""></button>
+                                    <button  value="√" onclick="appendValue(this.value), calculateSquareRoot();"><img src="View/images/icons/root.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -114,7 +114,7 @@
                             
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="^" onclick="appendValue(this.value)"><img id="levi" src="View/images/icons/levitated.png" alt=""></button>
+                                    <button onclick="appendValue(this.value), calculateExponent();"><img id="levi" src="View/images/icons/levitated.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -192,7 +192,7 @@
                             
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="1/2" onclick="appendValue(this.value)"><img id="scua" src="View/images/icons/scuare.png" alt=""></button>
+                                    <button value="1/" onclick="appendValue(this.value), appendFraction()"><img id="scua" src="View/images/icons/scuare.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
