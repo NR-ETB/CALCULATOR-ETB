@@ -30,7 +30,7 @@
                 <div class="front-calcu">
 
                     <div class="content-calcu">
-                        <input id="calcular" type="number">
+                        <input type="text" id="calcular" placeholder="0" onkeydown="return false;" />
 
                         <div class="content-inst">
 
@@ -43,28 +43,28 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>CE</button>
+                                    <button onclick="clearValue();">CE</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>7</button>
+                                    <button value="7" onclick="appendValue(this.value)">7</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>4</button>
+                                    <button value="4" onclick="appendValue(this.value)">4</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>1</button>
+                                    <button value="1" onclick="appendValue(this.value)">1</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -82,28 +82,28 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>C</button>
+                                    <button onclick="clearValue();">C</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>8</button>
+                                    <button value="8" onclick="appendValue(this.value)">8</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>5</button>
+                                    <button value="5" onclick="appendValue(this.value)">5</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>2</button>
+                                    <button value="2" onclick="appendValue(this.value)">2</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -121,28 +121,28 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button><img src="View/images/icons/delete.png" alt=""></button>
+                                    <button onclick="deleteLast();"><img src="View/images/icons/delete.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>9</button>
+                                    <button value="9" onclick="appendValue(this.value)">9</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>6</button>
+                                    <button value="6" onclick="appendValue(this.value)">6</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>3</button>
+                                    <button value="3" onclick="appendValue(this.value)">3</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -153,35 +153,35 @@
                             
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button><img id="scua" src="View/images/icons/scuare.png" alt=""></button>
+                                    <button value="/" onclick="appendValue(this.value)"><img src="View/images/icons/divide.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button><img src="View/images/icons/divide.png" alt=""></button>
+                                    <button value="*" onclick="appendValue(this.value)">X</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>X</button>
+                                    <button value="-" onclick="appendValue(this.value)">-</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>-</button>
+                                    <button value="+" onclick="appendValue(this.value)">+</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>+</button>
+                                    <button value="0" onclick="appendValue(this.value)">0</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -199,7 +199,7 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>.</button>
+                                    <button><img id="scua" src="View/images/icons/scuare.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -225,5 +225,6 @@
     </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.5/jquery.min.js"></script>
+<script src="Controller/numbers_Input.js"></script>
 </body>
 </html>

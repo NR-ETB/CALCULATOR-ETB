@@ -93,7 +93,7 @@ button{
     font-weight: 500;
     text-align: right;
     background-color: var(--withe-etb);
-
+    padding: 15px;
 }
 
 /* Con esta config, se elimina el "spinner" o contador que los inputs, tipo number, tienen por defecto en el navegador */ 
