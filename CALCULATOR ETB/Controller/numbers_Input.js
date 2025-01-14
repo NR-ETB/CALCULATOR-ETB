@@ -1,20 +1,20 @@
 function appendValue(value) {
-    const cal = document.getElementById('calcular');
-    if (cal.value === "0") {
-      cal.value = value;  // Reemplaza el valor "0" inicial
+    const cal = $('#calcular'); 
+    if (cal.val() === "0") {
+        cal.val(value);  // Reemplaza el valor "0" inicial
     } else {
-      cal.value += value; // Agrega el número al contenido existente
+        cal.val(cal.val() + value);  // Agrega el valor al contenido existente
     }
 }
 
 function clearValue() {
-    document.getElementById('calcular').value = "";  // Limpia el contenido del input
+    $('#calcular').val("");  // Limpia el contenido del input
 }
 
 function deleteLast() {
-    const cal = document.getElementById('calcular');
-    cal.value = cal.value.slice(0, -1);  // Elimina el último carácter
-    if (cal.value === "") {
-        document.getElementById('calcular').value = "";  // Limpia el contenido del input
+    const cal = $('#calcular');
+    cal.val(cal.val().slice(0, -1));  // Elimina el último carácter
+    if (cal.val() === "") {
+        cal.val("");  // Limpia el contenido del input si está vacío
     }
 }

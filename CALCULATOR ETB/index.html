@@ -36,7 +36,7 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>%</button>
+                                    <button value="%" onclick="appendValue(this.value)">%</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -75,7 +75,7 @@
                             
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button><img src="View/images/icons/root.png" alt=""></button>
+                                    <button  value="√" onclick="appendValue(this.value)"><img src="View/images/icons/root.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -114,7 +114,7 @@
                             
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button><img id="levi" src="View/images/icons/levitated.png" alt=""></button>
+                                    <button value="^" onclick="appendValue(this.value)"><img id="levi" src="View/images/icons/levitated.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -192,21 +192,21 @@
                             
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button>+-</button>
+                                    <button value="1/2" onclick="appendValue(this.value)"><img id="scua" src="View/images/icons/scuare.png" alt=""></button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button><img id="scua" src="View/images/icons/scuare.png" alt=""></button>
+                                    <button value="." onclick="appendValue(this.value)">.</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot2">
-                                    <button id="result">=</button>
+                                    <button id="result" onclick="calculateResult();">=</button>
                                 </div>
                                 <div class="back-bot2"></div>
                             </div>
@@ -224,7 +224,8 @@
 
     </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.5/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="Controller/numbers_Input.js"></script>
+<script src="Controller/basic_Operations.js"></script>
 </body>
 </html>
