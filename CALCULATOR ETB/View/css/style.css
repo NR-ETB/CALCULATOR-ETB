@@ -42,7 +42,7 @@ button{
     background-color: transparent;
     font-family: 'Poppins', sans-serif;
     font-size: 45px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     width: 75px;
     height: 77px;
@@ -50,15 +50,15 @@ button{
 /* Generalidades del Cuerpo */
 
 /* CSS de la Calculadora */
-.calcu{
-    display: flex;
-    margin: 60px 0 0 170px;
-}
-
 .calculator h3{
     font-size: 52px;
     font-weight: bold;
-    margin: 15px 0 0 290px;
+    margin: 15px 0 0 350px;
+}
+
+.calcu{
+    display: flex;
+    margin: 60px 0 0 243px;
 }
 
 .front-calcu{
@@ -93,7 +93,16 @@ button{
     font-weight: 500;
     text-align: right;
     background-color: var(--withe-etb);
+
 }
+
+/* Con esta config, se elimina el "spinner" o contador que los inputs, tipo number, tienen por defecto en el navegador */ 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Con esta config, se elimina el "spinner" o contador que los inputs, tipo number, tienen por defecto en el navegador */ 
 
 .instructions{
     display: flex;
@@ -130,6 +139,28 @@ button{
     height: 75px;
     margin: 40px 0 0 50px;
     z-index: 1;
+}
+
+.front-bot img{
+    width: 55px;
+    height: 55px;
+    margin: 10px;
+}
+
+#levi{
+    width: 100px;
+    height: 100px;
+    position: relative;
+    right: 20px;
+    bottom: 25px;
+}
+
+#scua{
+    width: 100px;
+    height: 100px;
+    position: relative;
+    right: 20px;
+    bottom: 23px;
 }
 
 .back-bot{
