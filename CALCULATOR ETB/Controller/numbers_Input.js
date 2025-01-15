@@ -5,6 +5,22 @@ function appendValue(value) {
     } else {
         cal.val(cal.val() + value);  // Agrega el valor al contenido existente
     }
+
+    var input = cal.val();
+
+    // Eliminar todos los caracteres no numéricos excepto el punto decimal
+    var cleanInput = input.replace(/[^0-9.]/g, '');
+
+    // Si hay un punto, limitar a uno solo
+    if (cleanInput.split('.').length > 2) {
+        cleanInput = cleanInput.slice(0, -1);
+    }
+
+    // Formatear el número con comas como separador de miles
+    if (cleanInput !== "") {
+        var formattedValue = Number(cleanInput).toLocaleString();  // Formatear el número con comas
+        cal.val(formattedValue);  // Mostrar el número formateado en el input
+    }
 }
 
 function clearValue() {

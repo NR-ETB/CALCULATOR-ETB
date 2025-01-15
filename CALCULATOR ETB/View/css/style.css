@@ -221,9 +221,10 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .fee h3{
-    font-size: 52px;
+    font-size: 42px;
     font-weight: bold;
-    margin: 15px 0 0 235px;
+    margin: 15px 0 0 0;
+    text-align: center;
 }
 
 .fee a{
@@ -234,3 +235,7 @@ input[type="number"]::-webkit-inner-spin-button {
     color: var(--withe-etb);
 }
 /* CSS del Tarifario */
+
+/* Responsive del Programa */
+
+/* Responsive del Programa */
