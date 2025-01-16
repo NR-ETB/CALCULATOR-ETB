@@ -12,11 +12,73 @@
 
         <div class="fee">
 
-            <h3>RETENCIONES Y COMISIONES</h3>
+            <h3>INCENTIVOS ETB</h3>
 
-            <ul>
-                <li></li>
-            </ul>
+            <table class="tble-inc">
+                <tr>
+                    <th id="tble-tt">Clasificación</th>
+                    <th>Producto</th>
+                    <th>Comisión</th>
+                </tr>
+
+                <tbody>
+                    <tr>
+                        <td>LT DUO TRIO</td>
+                        <td>FTTH</td>
+                        <td>$ 7.000</td>
+                    </tr>
+
+                    <tr>
+                        <td>UP GRANDES Y SVA</td>
+                        <td>SVA</td>
+                        <td>$ 700</td>
+                    </tr>
+
+                    <tr>
+                        <td>UP GRANDES Y SVA</td>
+                        <td>DGO</td>
+                        <td>$ 500</td>
+                    </tr>
+
+                    <tr>
+                        <td>MOVILES</td>
+                        <td>POSPAGO</td>
+                        <td>$ 30.000</td>
+                    </tr>
+
+                    <tr>
+                        <td>MOVILES</td>
+                        <td>DGO</td>
+                        <td>$ 400</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 id="ret">RETENCIONES</h3>
+
+            <table class="tble-inc2">
+                <tr>
+                    <th id="tble-tt2">Cantidad</th>
+                    <th>Comisión</th>
+                </tr>
+
+                <tbody>
+                    <tr>
+                        <td>1 a 90 <span>EFECTIVAS</span></td>
+                        <td>$ 500</td>
+                    </tr>
+
+                    <tr>
+                        <td>91 a 145 <span>EFECTIVAS</span></td>
+                        <td>$ 3.000</td>
+                    </tr>
+
+                    <tr>
+                        <td>146 <span>EN ADELANTE EFECTIVAS</span></td>
+                        <td>$ 5.000</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <a href="">¿Como usar la calculadora?</a>
 
@@ -30,7 +92,7 @@
                 <div class="front-calcu">
 
                     <div class="content-calcu">
-                        <input type="text" id="calcular" placeholder="0" onkeyup="formatNumber();" onkeydown="return false;" />
+                        <input type="text" id="calcular" placeholder="0" readonly onkeyup="formatNumber();" onkeydown="return false;" />
 
                         <div class="content-inst">
 
@@ -50,21 +112,21 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="7" onclick="appendValue(this.value)">7</button>
+                                    <button value="7" onclick="appendValue(this.value), formatNumber();">7</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="4" onclick="appendValue(this.value)">4</button>
+                                    <button value="4" onclick="appendValue(this.value), formatNumber();">4</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="1" onclick="appendValue(this.value)">1</button>
+                                    <button value="1" onclick="appendValue(this.value), formatNumber();">1</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -89,21 +151,21 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="8" onclick="appendValue(this.value)">8</button>
+                                    <button value="8" onclick="appendValue(this.value), formatNumber();">8</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="5" onclick="appendValue(this.value)">5</button>
+                                    <button value="5" onclick="appendValue(this.value), formatNumber();">5</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="2" onclick="appendValue(this.value)">2</button>
+                                    <button value="2" onclick="appendValue(this.value), formatNumber();">2</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
@@ -128,21 +190,21 @@
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="9" onclick="appendValue(this.value)">9</button>
+                                    <button value="9" onclick="appendValue(this.value), formatNumber();">9</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="6" onclick="appendValue(this.value)">6</button>
+                                    <button value="6" onclick="appendValue(this.value), formatNumber();">6</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>
 
                             <div class="instructions">
                                 <div class="front-bot">
-                                    <button value="3" onclick="appendValue(this.value)">3</button>
+                                    <button value="3" onclick="appendValue(this.value), formatNumber();">3</button>
                                 </div>
                                 <div class="back-bot"></div>
                             </div>

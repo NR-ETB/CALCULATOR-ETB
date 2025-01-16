@@ -221,7 +221,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .fee h3{
-    font-size: 42px;
+    font-size: 52px;
     font-weight: bold;
     margin: 15px 0 0 0;
     text-align: center;
@@ -231,8 +231,48 @@ input[type="number"]::-webkit-inner-spin-button {
     font-size: 26px;
     position: absolute;
     bottom: 0;
-    margin: 0 0 20px 190px;
+    margin: 0 0 10px 190px;
     color: var(--withe-etb);
+}
+
+.tble-inc {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 22px;
+    margin-top: 45px;
+}
+
+th, td {
+    border: 1px solid transparent;
+    padding: 8px;
+    text-align: center;
+}
+
+#tble-tt{
+    width: 300px;
+}
+
+#ret{
+    margin-top: 70px;
+}
+
+.tble-inc2{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 22px;
+    margin-top: 45px;
+}
+
+span{
+    font-weight: 600;
+}
+
+#tble-tt{
+    width: 300px;
+}
+
+#tble-tt2{
+    width: 400px;
 }
 /* CSS del Tarifario */
 
