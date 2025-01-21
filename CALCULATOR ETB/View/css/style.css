@@ -278,4 +278,16 @@ span{
 
 /* Responsive del Programa */
 
+/* Ajuste para pantallas de tamaño mediano */
+@media screen and (max-width: 1919px) {
+    .fee {
+        transform: translateX(-100px); /* Desplaza el área de tarifa a la izquierda */
+    }
+    
+    .calculator {
+        transform: translateX(-150px); /* Ajuste adicional para el contenedor de la calculadora */
+        margin-right: 4cqw; /* Añade un margen izquierdo para crear espacio */
+    }
+}
+
 /* Responsive del Programa */
