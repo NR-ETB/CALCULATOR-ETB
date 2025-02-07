@@ -70,7 +70,58 @@ button{
 }
 
 .l-login{
+    position: relative;
+    right: 310px;
+    top: 65px;
+}
 
+.l-login h1{
+    font-size: 48px;
+    text-align: center;
+    font-weight: 900;
+}
+
+.l-login img{
+    width: 45px;
+    height: 45px;
+    position: relative;
+    left: 585px;
+    top: 115px;
+    z-index: 1;
+}
+
+.l-login input{
+    background-color: var(--b3gray-etb);
+    position: relative;
+    left: 520px;
+    top: 100px;
+    border: none;
+    width: 390px;
+    height: 70px;
+    margin-bottom: 25px;
+    padding-left: 75px;
+    padding-top: 2px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 19px;
+    color: var(--black-etb);
+}
+
+.buttons-act{
+    position: relative;
+    left: 665px;
+    top: 200px;
+}
+
+.act{
+    border: 3px solid var(--bblue-etb);
+    border-radius: 45px;
+    background-color: var(--withe-etb);
+    color: var(--bblue-etb);
+    font-size: 24px;
+    font-weight: 900;
+    width: 200px;
+    height: 80px;
+    cursor: pointer;
 }
 
 .r-login{
@@ -81,6 +132,93 @@ button{
     background-color: var(--bblue-etb);
     width: 614px;
     height: 756px;
+    color: var(--withe-etb);
+}
+
+.r-login h1{
+    font-size: 64px;
+    font-weight: 900;
+}
+
+.well{
+    text-align: center;
+    margin: 195px 0 0 20px;
+}
+
+.well p{
+    margin-top: 30px;
+}
+
+.l-login2{
+    position: absolute;
+    border-radius: 12px 0 0 12px;
+    right: 0;
+    left: 0;
+    background-color: var(--bblue-etb);
+    width: 614px;
+    height: 756px;
+    color: var(--withe-etb);
+}
+
+.l-login2 h1{
+    font-size: 64px;
+    font-weight: 900;
+}
+
+.r-login2{
+    position: relative;
+    left: 310px;
+    top: 35px;
+}
+
+.r-login2 h1{
+    font-size: 48px;
+    text-align: center;
+    font-weight: 900;
+}
+
+.r-login2 img{
+    width: 45px;
+    height: 45px;
+    position: relative;
+    left: 585px;
+    top: 65px;
+    z-index: 1;
+}
+
+.r-login2 input{
+    background-color: var(--b3gray-etb);
+    position: relative;
+    left: 520px;
+    top: 50px;
+    border: none;
+    width: 390px;
+    height: 70px;
+    margin-bottom: 25px;
+    padding-left: 75px;
+    padding-top: 2px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 19px;
+    color: var(--black-etb);
+}
+
+.buttons-act2{
+    position: relative;
+    left: 665px;
+    top: 70px;
+}
+
+.act-2{
+    border: 3px solid var(--withe-etb);
+    border-radius: 45px;
+    background-color: var(--bblue-etb);
+    color: var(--withe-etb);
+    font-size: 24px;
+    font-weight: 900;
+    width: 240px;
+    height: 80px;
+    cursor: pointer;
+    margin-top: 55px;
 }
 
 .backdrop {
