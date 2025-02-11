@@ -50,10 +50,18 @@ button{
 /* Generalidades del Cuerpo */
 
 /* CSS de la Calculadora */
+.calculator{
+    background-color: var(--bblue-etb);
+    height: 959px;
+    width: 1220px;
+    position: absolute;
+    top: 0;
+}
 .calculator h3{
     font-size: 52px;
     font-weight: bold;
     margin: 15px 0 0 350px;
+    color: var(--withe-etb);
 }
 
 .calcu{
