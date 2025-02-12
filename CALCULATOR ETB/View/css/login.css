@@ -219,6 +219,8 @@ button{
     height: 80px;
     cursor: pointer;
     margin-top: 55px;
+    position: relative;
+    z-index: 1;
 }
 
 .backdrop {

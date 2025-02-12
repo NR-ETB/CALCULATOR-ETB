@@ -23,8 +23,8 @@ create table retenciones(
 create table usuario(
 
 	id_Usu INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	id_Inc INT NOT NULL, FOREIGN KEY (id_Inc) references incentivos(id_Inc),
-	id_Ret INT NOT NULL, FOREIGN KEY (id_Ret) references retenciones(id_Ret),
+	id_Inc INT, FOREIGN KEY (id_Inc) references incentivos(id_Inc),
+	id_Ret INT, FOREIGN KEY (id_Ret) references retenciones(id_Ret),
     nom_Usu VARCHAR(45) NOT NULL,
     cel_Usu BIGINT NOT NULL,
 	usu_Usu VARCHAR(45) NOT NULL,
