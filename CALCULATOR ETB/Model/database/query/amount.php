@@ -2,7 +2,7 @@
 session_start(); // Iniciar la sesión
 
 // Incluir el archivo de conexión a la base de datos
-include('Model/database/conexion.php');
+include('../../Model/database/conexion.php');
 
 // Inicializar la variable $cant_Cal
 $cant_Cal = null;

@@ -42,6 +42,53 @@ create table calculadora(
     
 )AUTO_INCREMENT = 3000;
 
+CREATE TABLE usuario_Incentivos (
+    id_Usu INT NOT NULL,
+    id_Inc INT NOT NULL,
+    PRIMARY KEY (id_Usu, id_Inc),
+    FOREIGN KEY (id_Usu) REFERENCES usuario(id_Usu),
+    FOREIGN KEY (id_Inc) REFERENCES incentivos(id_Inc)
+);
+
+CREATE TABLE usuario_Retenciones (
+    id_Usu INT NOT NULL,
+    id_Ret INT NOT NULL,
+    PRIMARY KEY (id_Usu, id_Ret),
+    FOREIGN KEY (id_Usu) REFERENCES usuario(id_Usu),
+    FOREIGN KEY (id_Ret) REFERENCES retenciones(id_Ret)
+);
+
+CREATE VIEW vista_incentivos_usuario AS
+SELECT
+    u.nom_Usu,
+    u.cel_Usu,
+    u.usu_Usu,
+    u.con_Usu,
+    i.cla_Inc,
+    i.pro_Inc,
+    i.com_Inc
+FROM
+    usuario u
+INNER JOIN
+    usuario_incentivos ui ON u.id_Usu = ui.id_Usu
+INNER JOIN
+    incentivos i ON ui.id_Inc = i.id_Inc;
+
+CREATE VIEW vista_retenciones_usuario AS
+SELECT
+    u.nom_Usu,
+    u.cel_Usu,
+    u.usu_Usu,
+    u.con_Usu,
+    r.cant_Ret,
+    r.com_Ret
+FROM
+    usuario u
+INNER JOIN
+    usuario_retenciones ur ON u.id_Usu = ur.id_Usu
+INNER JOIN
+    retenciones r ON ur.id_Ret = r.id_Ret;
+
 INSERT INTO incentivos(cla_Inc, pro_Inc, com_Inc) VALUES
 ("LT DUO TRIO", "FTTH", 7000),
 ("UP GRANDES Y SVA", "SVA", 700),

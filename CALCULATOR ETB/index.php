@@ -10,6 +10,18 @@
 <body>
 
 <?php
+
+    session_start();
+
+    if (isset($_SESSION['user'])) {
+        echo "<script>console.log('Sesión activa: " . $_SESSION['user'] . "');</script>";
+    } else {
+        echo "<script>console.log('No hay sesión activa.');</script>";
+    }
+
+    session_unset();
+    session_destroy();
+
     include('Model/database/conexion.php');
     include('Model/database/query/login.php');
     include('Model/database/query/create.php');

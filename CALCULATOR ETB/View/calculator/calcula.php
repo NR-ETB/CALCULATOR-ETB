@@ -1,3 +1,13 @@
+<?php
+    session_start();
+
+    if (isset($_SESSION['id_Usu'])) {
+        echo "<script>console.log('Sesión activa: Usuario ID " . $_SESSION['id_Usu'] . "');</script>";
+    } else {
+        echo "<script>console.log('No hay sesión activa.');</script>";
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,35 +108,64 @@
 
                 <img src="" alt="">
 
-                <p>Agrega aqui tu mas reciente <span>INCENTIVO ETB:</span> <br>
-                <span>Ganancias Genradas: <span id="earn_Inc">$49.000</span></span></p>
-                <button id="add">Añadir</button>
+                <form method="POST" action="add_Inc.php">
+                    <p>Agrega aqui tu mas reciente <span>INCENTIVO ETB:</span> <br>
+                    <span>Ganancias Genradas: <span id="earn_Inc">$49.000</span></span></p>
+                    <button id="add">Añadir</button>
 
-                <?php
-                    $sql = "SELECT cla_Inc FROM incentivos";
-                    $result = $conn->query($sql);
-                ?>
-                <select name="election" id="election">
-                    <option value="">Seleccione...</option>
                     <?php
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {
-                            echo '<option value="' . htmlspecialchars($row['cla_Inc']) . '">' . htmlspecialchars($row['cla_Inc']) . '</option>';
-                        }
-                    } else {
-                        echo '<option value="">No hay incentivos disponibles</option>';
-                    }
+                        $sql = "SELECT cla_Inc FROM incentivos";
+                        $result = $conn->query($sql);
                     ?>
-                </select>
-
+                    <select name="election" id="election">
+                        <option value="">Seleccione...</option>
+                        <?php
+                        if ($result->num_rows > 0) {
+                            while($row = $result->fetch_assoc()) {
+                                echo '<option value="' . htmlspecialchars($row['cla_Inc']) . '">' . htmlspecialchars($row['cla_Inc']) . '</option>';
+                            }
+                        } else {
+                            echo '<option value="">No hay incentivos disponibles</option>';
+                        }
+                        ?>
+                    </select>
+                </form>
 
                 <div class="lis">
-                    <ul>
-                        <li><input type="text" placeholder="$500"></li>
-                        <li><input type="text" placeholder="$500"></li>
-                        <li><input type="text" placeholder="$500"></li>
-                        <li><input type="text" placeholder="$500"></li>
-                    </ul>
+                    <?php
+
+                        // Verificar si el usuario ha iniciado sesión
+                        if (isset($_SESSION['id_Usu'])) {
+                            $userId = $_SESSION['id_Usu'];
+
+                            // Consulta para obtener las clasificaciones de los incentivos asociados al usuario
+                            $sql = "SELECT i.cla_Inc
+                                    FROM incentivos i
+                                    INNER JOIN usuario_incentivos ui ON i.id_Inc = ui.id_Inc
+                                    WHERE ui.id_Usu = ?";
+                            if ($stmt = $conn->prepare($sql)) {
+                                $stmt->bind_param('i', $userId);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+
+                                // Verificar si se encontraron incentivos
+                                if ($result->num_rows > 0) {
+                                    echo '<ul>';
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo '<li>' . htmlspecialchars($row['cla_Inc']) . '</li>';
+                                    }
+                                    echo '</ul>';
+                                } else {
+                                    echo 'No se encontraron incentivos para este usuario.';
+                                }
+                                $stmt->close();
+                            } else {
+                                echo 'Error al preparar la consulta.';
+                            }
+                        } else {
+                            echo 'Usuario no autenticado.';
+                        }
+                    ?>
                 </div>
 
             </div>
@@ -135,34 +174,64 @@
 
                 <img src="" alt="">
 
-                <p>Agrega aqui tu mas reciente <span>RETENCION EFECTIVA:</span> <br>
-                <span>Ganancias Genradas: <span id="earn_Ret">$49.000</span></span></p>
-                <button id="add2">Añadir</button>
+                <form method="POST" action="add_Ret.php">
+                    <p>Agrega aqui tu mas reciente <span>RETENCION EFECTIVA:</span> <br>
+                    <span>Ganancias Genradas: <span id="earn_Ret">$49.000</span></span></p>
+                    <button id="add2">Añadir</button>
 
-                <?php
-                    $sql2 = "SELECT cant_Ret FROM retenciones";
-                    $result2 = $conn->query($sql2);
-                ?>
-                <select name="election2" id="election2">
-                    <option value="">Seleccione...</option>
                     <?php
-                    if ($result2->num_rows > 0) {
-                        while($row = $result2->fetch_assoc()) {
-                            echo '<option value="' . htmlspecialchars($row['cant_Ret']) . '">' . htmlspecialchars($row['cant_Ret']) . '</option>';
-                        }
-                    } else {
-                        echo '<option value="">No hay retenciones disponibles</option>';
-                    }
+                        $sql2 = "SELECT cant_Ret FROM retenciones";
+                        $result2 = $conn->query($sql2);
                     ?>
-                </select>
+                    <select name="election2" id="election2">
+                        <option value="">Seleccione...</option>
+                        <?php
+                        if ($result2->num_rows > 0) {
+                            while($row = $result2->fetch_assoc()) {
+                                echo '<option value="' . htmlspecialchars($row['cant_Ret']) . '">' . htmlspecialchars($row['cant_Ret']) . '</option>';
+                            }
+                        } else {
+                            echo '<option value="">No hay retenciones disponibles</option>';
+                        }
+                        ?>
+                    </select>
+                </form>
 
                 <div class="lis2">
-                    <ul>
-                        <li><input type="text" placeholder="$500"></li>
-                        <li><input type="text" placeholder="$500"></li>
-                        <li><input type="text" placeholder="$500"></li>
-                        <li><input type="text" placeholder="$500"></li>
-                    </ul>
+                    <?php
+
+                        // Verificar si el usuario ha iniciado sesión
+                        if (isset($_SESSION['id_Usu'])) {
+                            $userId = $_SESSION['id_Usu'];
+
+                            // Consulta para obtener las retenciones asociadas al usuario
+                            $sql = "SELECT r.cant_Ret
+                                    FROM retenciones r
+                                    INNER JOIN usuario_retenciones ur ON r.id_Ret = ur.id_Ret
+                                    WHERE ur.id_Usu = ?";
+                            if ($stmt = $conn->prepare($sql)) {
+                                $stmt->bind_param('i', $userId);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+
+                                // Verificar si se encontraron retenciones
+                                if ($result->num_rows > 0) {
+                                    echo '<ul>';
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo '<li>' . htmlspecialchars($row['cant_Ret']) . '</li>';
+                                    }
+                                    echo '</ul>';
+                                } else {
+                                    echo 'No se encontraron retenciones para este usuario.';
+                                }
+                                $stmt->close();
+                            } else {
+                                echo 'Error al preparar la consulta.';
+                            }
+                        } else {
+                            echo 'Usuario no autenticado.';
+                        }
+                    ?>
                 </div>
             </div>
 
