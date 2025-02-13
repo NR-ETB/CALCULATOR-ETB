@@ -43,20 +43,20 @@ create table calculadora(
 )AUTO_INCREMENT = 3000;
 
 CREATE TABLE usuario_Incentivos (
+	id_UI INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_Usu INT NOT NULL,
     id_Inc INT NOT NULL,
-    PRIMARY KEY (id_Usu, id_Inc),
     FOREIGN KEY (id_Usu) REFERENCES usuario(id_Usu),
     FOREIGN KEY (id_Inc) REFERENCES incentivos(id_Inc)
-);
+)AUTO_INCREMENT = 4000;
 
 CREATE TABLE usuario_Retenciones (
+	id_UR INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_Usu INT NOT NULL,
     id_Ret INT NOT NULL,
-    PRIMARY KEY (id_Usu, id_Ret),
     FOREIGN KEY (id_Usu) REFERENCES usuario(id_Usu),
     FOREIGN KEY (id_Ret) REFERENCES retenciones(id_Ret)
-);
+)AUTO_INCREMENT = 5000;
 
 CREATE VIEW vista_incentivos_usuario AS
 SELECT

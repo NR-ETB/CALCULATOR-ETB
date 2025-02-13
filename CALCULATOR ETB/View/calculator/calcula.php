@@ -1,13 +1,3 @@
-<?php
-    session_start();
-
-    if (isset($_SESSION['id_Usu'])) {
-        echo "<script>console.log('Sesión activa: Usuario ID " . $_SESSION['id_Usu'] . "');</script>";
-    } else {
-        echo "<script>console.log('No hay sesión activa.');</script>";
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,8 +10,18 @@
 <body>
 
 <?php
+
+    session_start();
+
+    if (isset($_SESSION['id_Usu'])) {
+        echo "<script>console.log('Sesión activa: Usuario ID " . $_SESSION['id_Usu'] . "');</script>";
+    } else {
+        echo "<script>console.log('No hay sesión activa.');</script>";
+    }
+
     include('../../Model/database/conexion.php');
     include('../../Model/database/query/amount.php');
+
 ?>
 
     <div class="container">
@@ -108,27 +108,57 @@
 
                 <img src="" alt="">
 
-                <form method="POST" action="add_Inc.php">
+                <form method="POST" action="">
                     <p>Agrega aqui tu mas reciente <span>INCENTIVO ETB:</span> <br>
                     <span>Ganancias Genradas: <span id="earn_Inc">$49.000</span></span></p>
-                    <button id="add">Añadir</button>
-
                     <?php
-                        $sql = "SELECT cla_Inc FROM incentivos";
+                        // Verificar si el formulario ha sido enviado
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                            // Verificar que el usuario esté autenticado y que se haya seleccionado un incentivo
+                            if (isset($_SESSION['id_Usu']) && !empty($_POST['id_Inc'])) {
+                                $id_Usu = $_SESSION['id_Usu'];
+                                $id_Inc = $_POST['id_Inc'];
+
+                                // Validar que $id_Inc sea un número entero
+                                if (filter_var($id_Inc, FILTER_VALIDATE_INT)) {
+                                    // Preparar la consulta para insertar la relación en la tabla usuario_incentivos
+                                    $sql = "INSERT INTO usuario_incentivos (id_Usu, id_Inc) VALUES (?, ?)";
+                                    if ($stmt = $conn->prepare($sql)) {
+                                        $stmt->bind_param('ii', $id_Usu, $id_Inc);
+                                        if ($stmt->execute()) {
+                                            $message = "Incentivo añadido correctamente.";
+                                        } else {
+                                            $message = "Error al añadir el incentivo: " . $stmt->error;
+                                        }
+                                        $stmt->close();
+                                    } else {
+                                        $message = "Error en la preparación de la consulta: " . $conn->error;
+                                    }
+                                } else {
+                                    $message = "ID de incentivo no válido.";
+                                }
+                            } else {
+                                $message = "Datos insuficientes o usuario no autenticado.";
+                            }
+                        }
+
+                        // Obtener la lista de incentivos
+                        $sql = "SELECT id_Inc, cla_Inc FROM incentivos";
                         $result = $conn->query($sql);
                     ?>
-                    <select name="election" id="election">
-                        <option value="">Seleccione...</option>
+                    <select name="id_Inc" id="election">
+                        <option name="id_Inc" value="">Seleccione...</option>
                         <?php
                         if ($result->num_rows > 0) {
                             while($row = $result->fetch_assoc()) {
-                                echo '<option value="' . htmlspecialchars($row['cla_Inc']) . '">' . htmlspecialchars($row['cla_Inc']) . '</option>';
+                                echo '<option name="incentivo" value="' . htmlspecialchars($row['id_Inc']) . '">' . htmlspecialchars($row['cla_Inc']) . '</option>';
                             }
                         } else {
                             echo '<option value="">No hay incentivos disponibles</option>';
                         }
                         ?>
                     </select>
+                    <button id="add" type="submit">Añadir</button>
                 </form>
 
                 <div class="lis">
@@ -156,7 +186,7 @@
                                     }
                                     echo '</ul>';
                                 } else {
-                                    echo 'No se encontraron incentivos para este usuario.';
+                                    echo 'No se encontraron incentivos';
                                 }
                                 $stmt->close();
                             } else {
@@ -174,21 +204,58 @@
 
                 <img src="" alt="">
 
-                <form method="POST" action="add_Ret.php">
+                <form method="POST" action="">
                     <p>Agrega aqui tu mas reciente <span>RETENCION EFECTIVA:</span> <br>
                     <span>Ganancias Genradas: <span id="earn_Ret">$49.000</span></span></p>
-                    <button id="add2">Añadir</button>
+                    <button id="add2" type="submit">Añadir</button>
 
                     <?php
-                        $sql2 = "SELECT cant_Ret FROM retenciones";
-                        $result2 = $conn->query($sql2);
+                    
+                        // Verificar si el formulario ha sido enviado
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                            // Verificar que el usuario esté autenticado y que se haya seleccionado una retención
+                            if (isset($_SESSION['id_Usu']) && !empty($_POST['id_Ret'])) {
+                                $id_Usu = $_SESSION['id_Usu'];
+                                $id_Ret = $_POST['id_Ret'];
+                        
+                                // Validar que $id_Ret sea un número entero
+                                if (filter_var($id_Ret, FILTER_VALIDATE_INT)) {
+                                    // Preparar la consulta para insertar la relación en la tabla usuario_retenciones
+                                    $sql = "INSERT INTO usuario_retenciones (id_Usu, id_Ret) VALUES (?, ?)";
+                                    if ($stmt = $conn->prepare($sql)) {
+                                        // Vincular los parámetros
+                                        $stmt->bind_param('ii', $id_Usu, $id_Ret);
+                                        // Ejecutar la consulta
+                                        if ($stmt->execute()) {
+                                            $message =  "Retención añadida correctamente.";
+                                        } else {
+                                            $message =  "Error al ejecutar la consulta: " . $stmt->error;
+                                        }
+                                        // Cerrar la declaración
+                                        $stmt->close();
+                                    } else {
+                                        $message =  "Error al preparar la consulta: " . $conn->error;
+                                    }
+                                } else {
+                                    $message =  "ID de retención no válido.";
+                                }
+                            } else {
+                                $message =  "Datos insuficientes o usuario no autenticado.";
+                            }
+                        } else {
+                            $message =  "No se ha enviado el formulario.";
+                        }
+                        
+                            // Obtener la lista de incentivos
+                            $sql2 = "SELECT id_Ret, cant_Ret FROM retenciones";
+                            $result2 = $conn->query($sql2);
                     ?>
-                    <select name="election2" id="election2">
+                    <select name="id_Ret" id="election2">
                         <option value="">Seleccione...</option>
                         <?php
                         if ($result2->num_rows > 0) {
                             while($row = $result2->fetch_assoc()) {
-                                echo '<option value="' . htmlspecialchars($row['cant_Ret']) . '">' . htmlspecialchars($row['cant_Ret']) . '</option>';
+                                echo '<option value="' . htmlspecialchars($row['id_Ret']) . '">' . htmlspecialchars($row['cant_Ret']) . '</option>';
                             }
                         } else {
                             echo '<option value="">No hay retenciones disponibles</option>';
@@ -222,7 +289,7 @@
                                     }
                                     echo '</ul>';
                                 } else {
-                                    echo 'No se encontraron retenciones para este usuario.';
+                                    echo 'No se encontraron retenciones';
                                 }
                                 $stmt->close();
                             } else {
@@ -233,6 +300,7 @@
                         }
                     ?>
                 </div>
+                
             </div>
 
             <div class="re">
