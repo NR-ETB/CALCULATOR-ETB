@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     include('../../Model/database/conexion.php');
     include('../../Model/database/query/amount.php');
+    include('../../Model/database/query/export.php');
 
 ?>
 
@@ -565,80 +566,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ?>
 
                 Ganancias Totales: <span id="earn_Re">$<?php echo number_format($gananciasTotales, 2); ?></span></p>
-
-                <?php
-
-                    // Verificar si la solicitud es POST y si se han enviado los datos necesarios
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['download']) && isset($_POST['id_Usu'])) {
-                        $id_Usu = $_POST['id_Usu'];
-
-                        // Validar que el ID del usuario sea un número entero
-                        if (filter_var($id_Usu, FILTER_VALIDATE_INT)) {
-
-                            // Consulta SQL para obtener los datos del usuario
-                            $sql = "
-                                SELECT 
-                                    u.nom_Usu AS Nombre,
-                                    u.cel_Usu AS Teléfono,
-                                    u.usu_Usu AS Usuario,
-                                    COALESCE(COUNT(DISTINCT ui.id_Inc), 0) AS Cantidad_Incentivos,
-                                    COALESCE(SUM(i.com_Inc), 0) AS Valor_Total_Incentivos,
-                                    COALESCE(COUNT(DISTINCT ur.id_Ret), 0) AS Cantidad_Retenciones,
-                                    COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Retenciones,
-                                    COALESCE(c.cant_Cal, 0) AS Valor_Total_Calculadora
-                                FROM usuario u
-                                LEFT JOIN usuario_Incentivos ui ON u.id_Usu = ui.id_Usu
-                                LEFT JOIN incentivos i ON ui.id_Inc = i.id_Inc
-                                LEFT JOIN usuario_Retenciones ur ON u.id_Usu = ur.id_Usu
-                                LEFT JOIN retenciones r ON ur.id_Ret = r.id_Ret
-                                LEFT JOIN calculadora c ON u.id_Usu = c.id_Usu
-                                WHERE u.id_Usu = ?
-                                GROUP BY u.id_Usu, c.cant_Cal
-                            ";
-
-                            // Preparar y ejecutar la consulta
-                            if ($stmt = $conn->prepare($sql)) {
-                                $stmt->bind_param('i', $id_Usu);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-
-                                if ($result->num_rows > 0) {
-                                    // Establecer las cabeceras para la descarga del archivo CSV
-                                    header('Content-Type: text/csv; charset=utf-8');
-                                    header('Content-Disposition: attachment; filename=usuario_' . $id_Usu . '_datos.csv');
-
-                                    // Abrir el flujo de salida
-                                    $salida = fopen('php://output', 'w');
-
-                                    // Escribir los encabezados de las columnas
-                                    fputcsv($salida, array('Nombre', 'Teléfono', 'Usuario', 'Cantidad de Incentivos', 'Valor Total de Incentivos', 'Cantidad de Retenciones', 'Valor Total de Retenciones', 'Valor Total Calculadora'));
-
-                                    // Escribir los datos del usuario
-                                    while ($fila = $result->fetch_assoc()) {
-                                        fputcsv($salida, $fila);
-                                    }
-
-                                    // Cerrar el flujo de salida
-                                    fclose($salida);
-                                } else {
-                                    echo "No se encontraron registros para el usuario con ID: " . htmlspecialchars($id_Usu);
-                                }
-
-                                $stmt->close();
-                            } else {
-                                echo "Error al preparar la consulta: " . $conn->error;
-                            }
-
-                            // Cerrar la conexión a la base de datos
-                            $conn->close();
-                        } else {
-                            echo "ID de usuario no válido.";
-                        }
-                    } else {
-                        echo "Solicitud no válida.";
-                    }
-                    ?>
-
                 <form method="POST" action="">
                     <button id="add3" name="download" type="submit">Descargar</button>
                 </form>
@@ -667,7 +594,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?>
 
             <div class="exit_Session">
-                <form method="POST" action="../../index.php"">
+                <form method="POST" action="../../index.php">
                     <button id="exitb" name="logout" type="submit">Cerrar Sesión</button>
                 </form>
             </div>
