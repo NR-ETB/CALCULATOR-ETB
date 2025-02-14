@@ -1,3 +1,13 @@
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Procesar los datos del formulario
+    // Por ejemplo, insertar datos en la base de datos
+
+    // Redirigir a la misma página para evitar reenvío de formulario
+    header('Location: ' . $_SERVER['REQUEST_URI']);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

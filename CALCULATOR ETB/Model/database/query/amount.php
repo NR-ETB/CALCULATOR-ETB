@@ -6,11 +6,12 @@ include('../../Model/database/conexion.php');
 $cant_Cal = null;
 
 // Verificar si la variable de sesión 'id_Usu' está definida
+session_start();
 if (isset($_SESSION['id_Usu'])) {
     $userId = $_SESSION['id_Usu'];
 
-    // Preparar la consulta para obtener 'cant_Cal'
-    $sql = "SELECT cant_Cal FROM calculadora WHERE id_Usu = ?";
+    // Preparar la consulta para obtener las sumas de 'cantR_Usu' y 'cantI_Usu'
+    $sql = "SELECT COALESCE(cantR_Usu, 0) + COALESCE(cantI_Usu, 0) AS total_cantidad FROM usuario WHERE id_Usu = ?";
     if ($stmt = $conn->prepare($sql)) {
         $stmt->bind_param('i', $userId);
         $stmt->execute();

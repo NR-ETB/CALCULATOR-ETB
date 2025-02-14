@@ -1,3 +1,13 @@
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Procesar los datos del formulario
+    // Por ejemplo, insertar datos en la base de datos
+
+    // Redirigir a la misma página para evitar reenvío de formulario
+    header('Location: ' . $_SERVER['REQUEST_URI']);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,19 +116,36 @@
 
             <div class="inc">
 
-                <img src="" alt="">
+                <img src="../images/icons/incentive.png" alt="">
 
                 <form method="POST" action="">
                     <p>Agrega aqui tu mas reciente <span>INCENTIVO ETB:</span> <br>
-                    <span>Ganancias Genradas: <span id="earn_Inc">$49.000</span></span></p>
+
                     <?php
-                        // Verificar si el formulario ha sido enviado
+                        $id_Usu = $_SESSION['id_Usu'];
+
+                        // Consulta para obtener la suma de los incentivos del usuario
+                        $sql = "SELECT SUM(i.com_Inc) AS total_incentivos
+                                FROM usuario_incentivos ui
+                                INNER JOIN incentivos i ON ui.id_Inc = i.id_Inc
+                                WHERE ui.id_Usu = ?";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param('i', $id_Usu);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $row = $result->fetch_assoc();
+                        $total_incentivos = $row['total_incentivos'] ?? 0;
+                    ?>
+
+                    <span>Ganancias Generadas: <span id="earn_Inc">$<?php echo number_format($total_incentivos, 2); ?></span></p>
+                    <?php
+
                         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // Verificar que el usuario esté autenticado y que se haya seleccionado un incentivo
                             if (isset($_SESSION['id_Usu']) && !empty($_POST['id_Inc'])) {
                                 $id_Usu = $_SESSION['id_Usu'];
                                 $id_Inc = $_POST['id_Inc'];
-
+                        
                                 // Validar que $id_Inc sea un número entero
                                 if (filter_var($id_Inc, FILTER_VALIDATE_INT)) {
                                     // Preparar la consulta para insertar la relación en la tabla usuario_incentivos
@@ -126,11 +153,40 @@
                                     if ($stmt = $conn->prepare($sql)) {
                                         $stmt->bind_param('ii', $id_Usu, $id_Inc);
                                         if ($stmt->execute()) {
-                                            $message = "Incentivo añadido correctamente.";
+                                            // Incentivo añadido correctamente, ahora actualizar cantI_Usu
+                                            $stmt->close();
+                        
+                                            // Contar el número total de incentivos para el usuario
+                                            $countSql = "SELECT COUNT(*) FROM usuario_incentivos WHERE id_Usu = ?";
+                                            if ($countStmt = $conn->prepare($countSql)) {
+                                                $countStmt->bind_param('i', $id_Usu);
+                                                $countStmt->execute();
+                                                $countStmt->bind_result($incentiveCount);
+                                                if ($countStmt->fetch()) {
+                                                    $countStmt->close();
+                        
+                                                    // Actualizar la columna cantI_Usu en la tabla usuario
+                                                    $updateSql = "UPDATE usuario SET cantI_Usu = ? WHERE id_Usu = ?";
+                                                    if ($updateStmt = $conn->prepare($updateSql)) {
+                                                        $updateStmt->bind_param('ii', $incentiveCount, $id_Usu);
+                                                        if ($updateStmt->execute()) {
+                                                            $message = "Incentivo añadido y cantI_Usu actualizado correctamente.";
+                                                        } else {
+                                                            $message = "Error al actualizar cantI_Usu: " . $updateStmt->error;
+                                                        }
+                                                        $updateStmt->close();
+                                                    } else {
+                                                        $message = "Error en la preparación de la consulta de actualización: " . $conn->error;
+                                                    }
+                                                } else {
+                                                    $message = "Error al obtener el conteo de incentivos.";
+                                                }
+                                            } else {
+                                                $message = "Error en la preparación de la consulta de conteo: " . $conn->error;
+                                            }
                                         } else {
                                             $message = "Error al añadir el incentivo: " . $stmt->error;
                                         }
-                                        $stmt->close();
                                     } else {
                                         $message = "Error en la preparación de la consulta: " . $conn->error;
                                     }
@@ -140,7 +196,7 @@
                             } else {
                                 $message = "Datos insuficientes o usuario no autenticado.";
                             }
-                        }
+                        }                       
 
                         // Obtener la lista de incentivos
                         $sql = "SELECT id_Inc, cla_Inc FROM incentivos";
@@ -159,6 +215,62 @@
                         ?>
                     </select>
                     <button id="add" type="submit">Añadir</button>
+                    <?php
+                        // Verificar si el usuario está autenticado
+                        if (isset($_SESSION['id_Usu'])) {
+                            $id_Usu = $_SESSION['id_Usu'];
+
+                            // Verificar si se ha enviado el formulario para vaciar incentivos
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vaciar_incentivos'])) {
+                                // Iniciar una transacción
+                                $conn->begin_transaction();
+                                try {
+                                    // Eliminar todas las entradas de usuario_incentivos para el usuario actual
+                                    $sqlDelete = "DELETE FROM usuario_incentivos WHERE id_Usu = ?";
+                                    if ($stmtDelete = $conn->prepare($sqlDelete)) {
+                                        $stmtDelete->bind_param('i', $id_Usu);
+                                        if ($stmtDelete->execute()) {
+                                            // Restablecer el contador de incentivos en la tabla usuario
+                                            $sqlUpdate = "UPDATE usuario SET cantI_Usu = 0 WHERE id_Usu = ?";
+                                            if ($stmtUpdate = $conn->prepare($sqlUpdate)) {
+                                                $stmtUpdate->bind_param('i', $id_Usu);
+                                                if ($stmtUpdate->execute()) {
+                                                    // Confirmar la transacción
+                                                    $conn->commit();
+                                                    $message = "Todos los incentivos han sido eliminados correctamente.";
+                                                } else {
+                                                    throw new Exception("Error al restablecer el contador de incentivos: " . $stmtUpdate->error);
+                                                }
+                                                $stmtUpdate->close();
+                                            } else {
+                                                throw new Exception("Error en la preparación de la consulta de actualización: " . $conn->error);
+                                            }
+                                        } else {
+                                            throw new Exception("Error al eliminar los incentivos: " . $stmtDelete->error);
+                                        }
+                                        $stmtDelete->close();
+                                    } else {
+                                        throw new Exception("Error en la preparación de la consulta de eliminación: " . $conn->error);
+                                    }
+                                } catch (Exception $e) {
+                                    // Revertir la transacción en caso de error
+                                    $conn->rollback();
+                                    $message = $e->getMessage();
+                                }
+                            }
+                        } else {
+                            $message = "Usuario no autenticado.";
+                        }
+
+                        // Mostrar el mensaje si existe
+                        if (isset($message)) {
+                            echo "<p>$message</p>";
+                        }
+                    ?>
+                    <form method="POST" action="">
+                        <button id="add" name="vaciar_incentivos" type="submit">Vaciar</button>
+                    </form>
+
                 </form>
 
                 <div class="lis">
@@ -202,54 +314,150 @@
 
             <div class="ret">
 
-                <img src="" alt="">
+                <img src="../images/icons/retention.png" alt="">
 
                 <form method="POST" action="">
                     <p>Agrega aqui tu mas reciente <span>RETENCION EFECTIVA:</span> <br>
-                    <span>Ganancias Genradas: <span id="earn_Ret">$49.000</span></span></p>
+                    <?php
+                        if (isset($_SESSION['id_Usu'])) {
+                            $id_Usu = $_SESSION['id_Usu'];
+                            $sql = "SELECT IFNULL(SUM(r.com_Ret), 0) AS total_retenciones
+                                    FROM usuario_retenciones ur
+                                    INNER JOIN retenciones r ON ur.id_Ret = r.id_Ret
+                                    WHERE ur.id_Usu = ?";
+                            if ($stmt = $conn->prepare($sql)) {
+                                $stmt->bind_param('i', $id_Usu);
+                                $stmt->execute();
+                                $stmt->bind_result($total_retenciones);
+                                $stmt->fetch();
+                                $stmt->close();
+                            } else {
+                                $message = "Error en la preparación de la consulta: " . $conn->error;
+                            }
+                        } else {
+                            $total_retenciones = 0;
+                        }
+                    ?>
+                    <p>Ganancias Generadas: <span id="earn_Ret">$<?php echo number_format($total_retenciones, 2); ?></span></p>
                     <button id="add2" type="submit">Añadir</button>
 
                     <?php
-                    
+                        // Verificar si el usuario está autenticado
+                        if (isset($_SESSION['id_Usu'])) {
+                            $id_Usu = $_SESSION['id_Usu'];
+
+                            // Verificar si se ha enviado el formulario para vaciar retenciones
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vaciar_retenciones'])) {
+                                // Iniciar una transacción
+                                $conn->begin_transaction();
+                                try {
+                                    // Eliminar todas las retenciones asociadas al usuario en la tabla usuario_retenciones
+                                    $sqlDelete = "DELETE FROM usuario_retenciones WHERE id_Usu = ?";
+                                    if ($stmtDelete = $conn->prepare($sqlDelete)) {
+                                        $stmtDelete->bind_param('i', $id_Usu);
+                                        if ($stmtDelete->execute()) {
+                                            // Restablecer el contador de retenciones en la tabla usuario
+                                            $sqlUpdate = "UPDATE usuario SET cantR_Usu = 0 WHERE id_Usu = ?";
+                                            if ($stmtUpdate = $conn->prepare($sqlUpdate)) {
+                                                $stmtUpdate->bind_param('i', $id_Usu);
+                                                if ($stmtUpdate->execute()) {
+                                                    // Confirmar la transacción
+                                                    $conn->commit();
+                                                    $message = "Todas las retenciones han sido eliminadas correctamente.";
+                                                } else {
+                                                    throw new Exception("Error al restablecer el contador de retenciones: " . $stmtUpdate->error);
+                                                }
+                                                $stmtUpdate->close();
+                                            } else {
+                                                throw new Exception("Error en la preparación de la consulta de actualización: " . $conn->error);
+                                            }
+                                        } else {
+                                            throw new Exception("Error al eliminar las retenciones: " . $stmtDelete->error);
+                                        }
+                                        $stmtDelete->close();
+                                    } else {
+                                        throw new Exception("Error en la preparación de la consulta de eliminación: " . $conn->error);
+                                    }
+                                } catch (Exception $e) {
+                                    // Revertir la transacción en caso de error
+                                    $conn->rollback();
+                                    $message = $e->getMessage();
+                                }
+                            }
+                        } else {
+                            $message = "Usuario no autenticado.";
+                        }
+
+                        // Mostrar el mensaje si existe
+                        if (isset($message)) {
+                            echo "<p>$message</p>";
+                        }
+                    ?>
+                    <form method="POST" action="">
+                        <button id="add2" name="vaciar_retenciones" type="submit">Vaciar</button>
+                    </form>
+
+                    <?php
+
                         // Verificar si el formulario ha sido enviado
                         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // Verificar que el usuario esté autenticado y que se haya seleccionado una retención
                             if (isset($_SESSION['id_Usu']) && !empty($_POST['id_Ret'])) {
                                 $id_Usu = $_SESSION['id_Usu'];
                                 $id_Ret = $_POST['id_Ret'];
-                        
+
                                 // Validar que $id_Ret sea un número entero
                                 if (filter_var($id_Ret, FILTER_VALIDATE_INT)) {
-                                    // Preparar la consulta para insertar la relación en la tabla usuario_retenciones
-                                    $sql = "INSERT INTO usuario_retenciones (id_Usu, id_Ret) VALUES (?, ?)";
-                                    if ($stmt = $conn->prepare($sql)) {
-                                        // Vincular los parámetros
-                                        $stmt->bind_param('ii', $id_Usu, $id_Ret);
-                                        // Ejecutar la consulta
-                                        if ($stmt->execute()) {
-                                            $message =  "Retención añadida correctamente.";
+                                    // Iniciar una transacción
+                                    $conn->begin_transaction();
+                                    try {
+                                        // Preparar la consulta para insertar la relación en la tabla usuario_retenciones
+                                        $sqlInsert = "INSERT INTO usuario_retenciones (id_Usu, id_Ret) VALUES (?, ?)";
+                                        if ($stmtInsert = $conn->prepare($sqlInsert)) {
+                                            $stmtInsert->bind_param('ii', $id_Usu, $id_Ret);
+                                            if ($stmtInsert->execute()) {
+                                                // Preparar la consulta para incrementar el campo cantR_Usu en la tabla usuario
+                                                $sqlUpdate = "UPDATE usuario SET cantR_Usu = COALESCE(cantR_Usu, 0) + 1 WHERE id_Usu = ?";
+                                                if ($stmtUpdate = $conn->prepare($sqlUpdate)) {
+                                                    $stmtUpdate->bind_param('i', $id_Usu);
+                                                    if ($stmtUpdate->execute()) {
+                                                        // Confirmar la transacción
+                                                        $conn->commit();
+                                                        $message = "Retención añadida y contador actualizado correctamente.";
+                                                    } else {
+                                                        throw new Exception("Error al actualizar el contador: " . $stmtUpdate->error);
+                                                    }
+                                                    $stmtUpdate->close();
+                                                } else {
+                                                    throw new Exception("Error en la preparación de la consulta de actualización: " . $conn->error);
+                                                }
+                                            } else {
+                                                throw new Exception("Error al añadir la retención: " . $stmtInsert->error);
+                                            }
+                                            $stmtInsert->close();
                                         } else {
-                                            $message =  "Error al ejecutar la consulta: " . $stmt->error;
+                                            throw new Exception("Error en la preparación de la consulta de inserción: " . $conn->error);
                                         }
-                                        // Cerrar la declaración
-                                        $stmt->close();
-                                    } else {
-                                        $message =  "Error al preparar la consulta: " . $conn->error;
+                                    } catch (Exception $e) {
+                                        // Revertir la transacción en caso de error
+                                        $conn->rollback();
+                                        $message = $e->getMessage();
                                     }
                                 } else {
-                                    $message =  "ID de retención no válido.";
+                                    $message = "ID de retención no válido.";
                                 }
                             } else {
-                                $message =  "Datos insuficientes o usuario no autenticado.";
+                                $message = "Datos insuficientes o usuario no autenticado.";
                             }
                         } else {
-                            $message =  "No se ha enviado el formulario.";
+                            $message = "No se ha enviado el formulario.";
                         }
-                        
-                            // Obtener la lista de incentivos
-                            $sql2 = "SELECT id_Ret, cant_Ret FROM retenciones";
-                            $result2 = $conn->query($sql2);
+
+                        // Obtener la lista de retenciones
+                        $sql2 = "SELECT id_Ret, cant_Ret FROM retenciones";
+                        $result2 = $conn->query($sql2);
                     ?>
+
                     <select name="id_Ret" id="election2">
                         <option value="">Seleccione...</option>
                         <?php
@@ -304,8 +512,60 @@
             </div>
 
             <div class="re">
+
+                <img src="../images/icons/all.png" alt="">
+
                 <p>Aqui esta el total de <span>INCENTIVOS Y RETENCIONES:</span> <br>
-                <span>Ganancias Totales: <span id="earn_Re">$49.000</span></span></p>
+
+                <?php
+
+                    // Verificar si el usuario está autenticado
+                    if (isset($_SESSION['id_Usu'])) {
+                        $userId = $_SESSION['id_Usu'];
+
+                        // Inicializar la variable para las ganancias totales
+                        $gananciasTotales = 0;
+
+                        // Calcular la suma de los incentivos del usuario
+                        $sqlIncentivos = "
+                            SELECT SUM(i.com_Inc) AS total_incentivos
+                            FROM usuario_incentivos ui
+                            INNER JOIN incentivos i ON ui.id_Inc = i.id_Inc
+                            WHERE ui.id_Usu = ?";
+                        if ($stmt = $conn->prepare($sqlIncentivos)) {
+                            $stmt->bind_param('i', $userId);
+                            $stmt->execute();
+                            $stmt->bind_result($totalIncentivos);
+                            $stmt->fetch();
+                            $stmt->close();
+                            $gananciasTotales += $totalIncentivos;
+                        } else {
+                            echo "Error al preparar la consulta de incentivos.";
+                        }
+
+                        // Calcular la suma de las retenciones del usuario
+                        $sqlRetenciones = "
+                            SELECT SUM(r.com_Ret) AS total_retenciones
+                            FROM usuario_retenciones ur
+                            INNER JOIN retenciones r ON ur.id_Ret = r.id_Ret
+                            WHERE ur.id_Usu = ?";
+                        if ($stmt = $conn->prepare($sqlRetenciones)) {
+                            $stmt->bind_param('i', $userId);
+                            $stmt->execute();
+                            $stmt->bind_result($totalRetenciones);
+                            $stmt->fetch();
+                            $stmt->close();
+                            $gananciasTotales += $totalRetenciones;
+                        } else {
+                            echo "Error al preparar la consulta de retenciones.";
+                        }
+                    } else {
+                        echo "Usuario no autenticado.";
+                        $gananciasTotales = 0;
+                    }
+                ?>
+
+                Ganancias Totales: <span id="earn_Re">$<?php echo number_format($gananciasTotales, 2); ?></span></p>
                 <button id="add3">Descargar</button>
                 <input id="election3" type="text" value="<?php echo htmlspecialchars($cant_Cal); ?>" readonly>
             </div>
