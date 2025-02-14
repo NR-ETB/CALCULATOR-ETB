@@ -339,6 +339,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     ?>
                     <p>Ganancias Generadas: <span id="earn_Ret">$<?php echo number_format($total_retenciones, 2); ?></span></p>
+                    <?php
+
+                    // Verificar si el formulario ha sido enviado
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        // Verificar que el usuario esté autenticado y que se haya seleccionado una retención
+                        if (isset($_SESSION['id_Usu']) && !empty($_POST['id_Ret'])) {
+                            $id_Usu = $_SESSION['id_Usu'];
+                            $id_Ret = $_POST['id_Ret'];
+
+                            // Validar que $id_Ret sea un número entero
+                            if (filter_var($id_Ret, FILTER_VALIDATE_INT)) {
+                                // Iniciar una transacción
+                                $conn->begin_transaction();
+                                try {
+                                    // Preparar la consulta para insertar la relación en la tabla usuario_retenciones
+                                    $sqlInsert = "INSERT INTO usuario_retenciones (id_Usu, id_Ret) VALUES (?, ?)";
+                                    if ($stmtInsert = $conn->prepare($sqlInsert)) {
+                                        $stmtInsert->bind_param('ii', $id_Usu, $id_Ret);
+                                        if ($stmtInsert->execute()) {
+                                            // Preparar la consulta para incrementar el campo cantR_Usu en la tabla usuario
+                                            $sqlUpdate = "UPDATE usuario SET cantR_Usu = COALESCE(cantR_Usu, 0) + 1 WHERE id_Usu = ?";
+                                            if ($stmtUpdate = $conn->prepare($sqlUpdate)) {
+                                                $stmtUpdate->bind_param('i', $id_Usu);
+                                                if ($stmtUpdate->execute()) {
+                                                    // Confirmar la transacción
+                                                    $conn->commit();
+                                                    $message = "Retención añadida y contador actualizado correctamente.";
+                                                } else {
+                                                    throw new Exception("Error al actualizar el contador: " . $stmtUpdate->error);
+                                                }
+                                                $stmtUpdate->close();
+                                            } else {
+                                                throw new Exception("Error en la preparación de la consulta de actualización: " . $conn->error);
+                                            }
+                                        } else {
+                                            throw new Exception("Error al añadir la retención: " . $stmtInsert->error);
+                                        }
+                                        $stmtInsert->close();
+                                    } else {
+                                        throw new Exception("Error en la preparación de la consulta de inserción: " . $conn->error);
+                                    }
+                                } catch (Exception $e) {
+                                    // Revertir la transacción en caso de error
+                                    $conn->rollback();
+                                    $message = $e->getMessage();
+                                }
+                            } else {
+                                //"ID de retención no válido.";
+                            }
+                        } else {
+                            //"Datos insuficientes o usuario no autenticado.";
+                        }
+                    } else {
+                        // "No se ha enviado el formulario.";
+                    }
+
+                    // Obtener la lista de retenciones
+                    $sql2 = "SELECT id_Ret, cant_Ret FROM retenciones";
+                    $result2 = $conn->query($sql2);
+                    ?>
+
+                    <select name="id_Ret" id="election2">
+                    <option value="">Seleccione...</option>
+                    <?php
+                    if ($result2->num_rows > 0) {
+                        while($row = $result2->fetch_assoc()) {
+                            echo '<option value="' . htmlspecialchars($row['id_Ret']) . '">' . htmlspecialchars($row['cant_Ret']) . '</option>';
+                        }
+                    } else {
+                        echo '<option value="">No hay retenciones disponibles</option>';
+                    }
+                    ?>
+                    </select>
                     <button id="add2" type="submit">Añadir</button>
 
                     <?php
@@ -396,80 +469,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form method="POST" action="">
                         <button id="add2" name="vaciar_retenciones" type="submit">Vaciar</button>
                     </form>
-
-                    <?php
-
-                        // Verificar si el formulario ha sido enviado
-                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                            // Verificar que el usuario esté autenticado y que se haya seleccionado una retención
-                            if (isset($_SESSION['id_Usu']) && !empty($_POST['id_Ret'])) {
-                                $id_Usu = $_SESSION['id_Usu'];
-                                $id_Ret = $_POST['id_Ret'];
-
-                                // Validar que $id_Ret sea un número entero
-                                if (filter_var($id_Ret, FILTER_VALIDATE_INT)) {
-                                    // Iniciar una transacción
-                                    $conn->begin_transaction();
-                                    try {
-                                        // Preparar la consulta para insertar la relación en la tabla usuario_retenciones
-                                        $sqlInsert = "INSERT INTO usuario_retenciones (id_Usu, id_Ret) VALUES (?, ?)";
-                                        if ($stmtInsert = $conn->prepare($sqlInsert)) {
-                                            $stmtInsert->bind_param('ii', $id_Usu, $id_Ret);
-                                            if ($stmtInsert->execute()) {
-                                                // Preparar la consulta para incrementar el campo cantR_Usu en la tabla usuario
-                                                $sqlUpdate = "UPDATE usuario SET cantR_Usu = COALESCE(cantR_Usu, 0) + 1 WHERE id_Usu = ?";
-                                                if ($stmtUpdate = $conn->prepare($sqlUpdate)) {
-                                                    $stmtUpdate->bind_param('i', $id_Usu);
-                                                    if ($stmtUpdate->execute()) {
-                                                        // Confirmar la transacción
-                                                        $conn->commit();
-                                                        $message = "Retención añadida y contador actualizado correctamente.";
-                                                    } else {
-                                                        throw new Exception("Error al actualizar el contador: " . $stmtUpdate->error);
-                                                    }
-                                                    $stmtUpdate->close();
-                                                } else {
-                                                    throw new Exception("Error en la preparación de la consulta de actualización: " . $conn->error);
-                                                }
-                                            } else {
-                                                throw new Exception("Error al añadir la retención: " . $stmtInsert->error);
-                                            }
-                                            $stmtInsert->close();
-                                        } else {
-                                            throw new Exception("Error en la preparación de la consulta de inserción: " . $conn->error);
-                                        }
-                                    } catch (Exception $e) {
-                                        // Revertir la transacción en caso de error
-                                        $conn->rollback();
-                                        $message = $e->getMessage();
-                                    }
-                                } else {
-                                    $message = "ID de retención no válido.";
-                                }
-                            } else {
-                                $message = "Datos insuficientes o usuario no autenticado.";
-                            }
-                        } else {
-                            $message = "No se ha enviado el formulario.";
-                        }
-
-                        // Obtener la lista de retenciones
-                        $sql2 = "SELECT id_Ret, cant_Ret FROM retenciones";
-                        $result2 = $conn->query($sql2);
-                    ?>
-
-                    <select name="id_Ret" id="election2">
-                        <option value="">Seleccione...</option>
-                        <?php
-                        if ($result2->num_rows > 0) {
-                            while($row = $result2->fetch_assoc()) {
-                                echo '<option value="' . htmlspecialchars($row['id_Ret']) . '">' . htmlspecialchars($row['cant_Ret']) . '</option>';
-                            }
-                        } else {
-                            echo '<option value="">No hay retenciones disponibles</option>';
-                        }
-                        ?>
-                    </select>
                 </form>
 
                 <div class="lis2">
@@ -566,8 +565,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ?>
 
                 Ganancias Totales: <span id="earn_Re">$<?php echo number_format($gananciasTotales, 2); ?></span></p>
-                <button id="add3">Descargar</button>
+
+                <?php
+
+                    // Verificar si la solicitud es POST y si se han enviado los datos necesarios
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['download']) && isset($_POST['id_Usu'])) {
+                        $id_Usu = $_POST['id_Usu'];
+
+                        // Validar que el ID del usuario sea un número entero
+                        if (filter_var($id_Usu, FILTER_VALIDATE_INT)) {
+
+                            // Consulta SQL para obtener los datos del usuario
+                            $sql = "
+                                SELECT 
+                                    u.nom_Usu AS Nombre,
+                                    u.cel_Usu AS Teléfono,
+                                    u.usu_Usu AS Usuario,
+                                    COALESCE(COUNT(DISTINCT ui.id_Inc), 0) AS Cantidad_Incentivos,
+                                    COALESCE(SUM(i.com_Inc), 0) AS Valor_Total_Incentivos,
+                                    COALESCE(COUNT(DISTINCT ur.id_Ret), 0) AS Cantidad_Retenciones,
+                                    COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Retenciones,
+                                    COALESCE(c.cant_Cal, 0) AS Valor_Total_Calculadora
+                                FROM usuario u
+                                LEFT JOIN usuario_Incentivos ui ON u.id_Usu = ui.id_Usu
+                                LEFT JOIN incentivos i ON ui.id_Inc = i.id_Inc
+                                LEFT JOIN usuario_Retenciones ur ON u.id_Usu = ur.id_Usu
+                                LEFT JOIN retenciones r ON ur.id_Ret = r.id_Ret
+                                LEFT JOIN calculadora c ON u.id_Usu = c.id_Usu
+                                WHERE u.id_Usu = ?
+                                GROUP BY u.id_Usu, c.cant_Cal
+                            ";
+
+                            // Preparar y ejecutar la consulta
+                            if ($stmt = $conn->prepare($sql)) {
+                                $stmt->bind_param('i', $id_Usu);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+
+                                if ($result->num_rows > 0) {
+                                    // Establecer las cabeceras para la descarga del archivo CSV
+                                    header('Content-Type: text/csv; charset=utf-8');
+                                    header('Content-Disposition: attachment; filename=usuario_' . $id_Usu . '_datos.csv');
+
+                                    // Abrir el flujo de salida
+                                    $salida = fopen('php://output', 'w');
+
+                                    // Escribir los encabezados de las columnas
+                                    fputcsv($salida, array('Nombre', 'Teléfono', 'Usuario', 'Cantidad de Incentivos', 'Valor Total de Incentivos', 'Cantidad de Retenciones', 'Valor Total de Retenciones', 'Valor Total Calculadora'));
+
+                                    // Escribir los datos del usuario
+                                    while ($fila = $result->fetch_assoc()) {
+                                        fputcsv($salida, $fila);
+                                    }
+
+                                    // Cerrar el flujo de salida
+                                    fclose($salida);
+                                } else {
+                                    echo "No se encontraron registros para el usuario con ID: " . htmlspecialchars($id_Usu);
+                                }
+
+                                $stmt->close();
+                            } else {
+                                echo "Error al preparar la consulta: " . $conn->error;
+                            }
+
+                            // Cerrar la conexión a la base de datos
+                            $conn->close();
+                        } else {
+                            echo "ID de usuario no válido.";
+                        }
+                    } else {
+                        echo "Solicitud no válida.";
+                    }
+                    ?>
+
+                <form method="POST" action="">
+                    <button id="add3" name="download" type="submit">Descargar</button>
+                </form>
                 <input id="election3" type="text" value="<?php echo htmlspecialchars($cant_Cal); ?>" readonly>
+            </div>
+
+            <?php
+                // Verificar si se ha enviado la solicitud de cierre de sesión
+                if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+                    // Destruir todas las variables de sesión
+                    $_SESSION = array();
+
+                    // Si se desea destruir la sesión completamente, también se debe eliminar la cookie de sesión
+                    if (ini_get("session.use_cookies")) {
+                        $params = session_get_cookie_params();
+                        setcookie(session_name(), '', time() - 42000,
+                            $params["path"], $params["domain"],
+                            $params["secure"], $params["httponly"]
+                        );
+                    }
+
+                    // Finalmente, destruir la sesión
+                    session_destroy();
+                    exit();
+                }
+            ?>
+
+            <div class="exit_Session">
+                <form method="POST" action="../../index.php"">
+                    <button id="exitb" name="logout" type="submit">Cerrar Sesión</button>
+                </form>
             </div>
 
         </div>

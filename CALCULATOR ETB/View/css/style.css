@@ -120,7 +120,9 @@ button{
     position: relative;
     left: 405px;
     bottom: 40px;
+    width: 200px;
     overflow-y: scroll;
+    overflow-x: scroll;
 }
 .lis2{
     background-color: var(--withe-etb);
@@ -128,20 +130,16 @@ button{
     font-size: 16px;
     font-weight: 600;
     position: relative;
-    left: 105px;
+    left: 335px;
     bottom: 40px;
+    width: 200px;
     overflow-y: scroll;
+    overflow-x: scroll;
 }
-#election{
+#election, #election2{
     position: relative;
     left: 660px;
     bottom: 70px;
-    font-family: 'Poppins', sans-serif;
-}
-#election2{
-    position: relative;
-    left: 40px;
-    top: 10px;
     font-family: 'Poppins', sans-serif;
 }
 #election3{
@@ -152,13 +150,9 @@ button{
     color: var(--orange-etb);
     font-family: 'Poppins', sans-serif;
 }
-#add{
+#add, #add2{
     position: relative;
     left: 435px;
-}
-#add2{
-    position: relative;
-    left: 660px;
 }
 #add3{
     position: relative;
@@ -168,6 +162,16 @@ button{
 }
 #earn_Inc, #earn_Ret, #earn_Re{
     color: var(--orange-etb);
+}
+.exit_Session{
+    position: relative;
+    z-index: 1;
+    bottom: 100px;
+    left: 1005px;
+}
+#exitb{
+    width: 200px;
+    background-color: var(--orange-etb);
 }
 /* CSS de la Calculadora */ 
 
