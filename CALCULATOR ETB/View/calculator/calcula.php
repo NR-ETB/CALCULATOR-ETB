@@ -597,76 +597,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <?php
-    include('../../Model/database/conexion.php');
+                include('../../Model/database/conexion.php');
 
-    // Consulta SQL para obtener los datos
-    $sql = "
-        SELECT
-            u.nom_Usu AS Nombre,
-            u.cel_Usu AS Telefono,
-            COUNT(ui.id_Inc) AS Cantidad_Incentivos,
-            COALESCE(SUM(i.com_Inc), 0) AS Valor_Total_Incentivos,
-            COUNT(ur.id_Ret) AS Cantidad_Retenciones,
-            COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Retenciones,
-            COALESCE(SUM(i.com_Inc), 0) + COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Calculadora
-        FROM
-            usuario u
-        LEFT JOIN
-            usuario_incentivos ui ON u.id_Usu = ui.id_Usu
-        LEFT JOIN
-            incentivos i ON ui.id_Inc = i.id_Inc
-        LEFT JOIN
-            usuario_retenciones ur ON u.id_Usu = ur.id_Usu
-        LEFT JOIN
-            retenciones r ON ur.id_Ret = r.id_Ret
-        LEFT JOIN
-            calculadora c ON u.id_Usu = c.id_Usu
-        GROUP BY
-            u.id_Usu;
-    ";
+                // Consulta SQL para obtener los datos
+                $sql = "
+                    SELECT
+                        u.nom_Usu AS Nombre,
+                        u.cel_Usu AS Telefono,
+                        COUNT(ui.id_Inc) AS Cantidad_Incentivos,
+                        COALESCE(SUM(i.com_Inc), 0) AS Valor_Total_Incentivos,
+                        COUNT(ur.id_Ret) AS Cantidad_Retenciones,
+                        COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Retenciones,
+                        COALESCE(SUM(i.com_Inc), 0) + COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Calculadora
+                    FROM
+                        usuario u
+                    LEFT JOIN
+                        usuario_incentivos ui ON u.id_Usu = ui.id_Usu
+                    LEFT JOIN
+                        incentivos i ON ui.id_Inc = i.id_Inc
+                    LEFT JOIN
+                        usuario_retenciones ur ON u.id_Usu = ur.id_Usu
+                    LEFT JOIN
+                        retenciones r ON ur.id_Ret = r.id_Ret
+                    GROUP BY
+                        u.id_Usu;
+                ";
 
-    $resultado = $conn->query($sql);
+                $resultado = $conn->query($sql);
 
-    // Verificar si hay resultados
-    if ($resultado->num_rows > 0) {
-        // Crear la tabla HTML con estilo para hacerlo invisible
-        echo '<table id="dataTable" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Telefono</th>
-                        <th>Cantidad_Incentivos</th>
-                        <th>Valor_Total_Incentivos</th>
-                        <th>Cantidad_Retenciones</th>
-                        <th>Valor_Total_Retenciones</th>
-                        <th>Valor_Total_Calculadora</th>
-                    </tr>
-                </thead>
-                <tbody>';
+                // Verificar si hay resultados
+                if ($resultado->num_rows > 0) {
+                    // Crear la tabla HTML con estilo para hacerlo invisible
+                    echo '<table id="dataTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Telefono</th>
+                                    <th>Cantidad_Incentivos</th>
+                                    <th>Valor_Total_Incentivos</th>
+                                    <th>Cantidad_Retenciones</th>
+                                    <th>Valor_Total_Retenciones</th>
+                                    <th>Valor_Total_Calculadora</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
 
-        // Mostrar los datos en la tabla
-        while ($row = $resultado->fetch_assoc()) {
-            echo '<tr>
-                    <td>' . htmlspecialchars($row['Nombre']) . '</td>
-                    <td>' . htmlspecialchars($row['Telefono']) . '</td>
-                    <td>' . htmlspecialchars($row['Cantidad_Incentivos']) . '</td>
-                    <td>' . htmlspecialchars($row['Valor_Total_Incentivos']) . '</td>
-                    <td>' . htmlspecialchars($row['Cantidad_Retenciones']) . '</td>
-                    <td>' . htmlspecialchars($row['Valor_Total_Retenciones']) . '</td>
-                    <td>' . htmlspecialchars($row['Valor_Total_Calculadora']) . '</td>
-                </tr>';
-        }
+                    // Mostrar los datos en la tabla
+                    while ($row = $resultado->fetch_assoc()) {
+                        echo '<tr>
+                                <td>' . htmlspecialchars($row['Nombre']) . '</td>
+                                <td>' . htmlspecialchars($row['Telefono']) . '</td>
+                                <td>' . htmlspecialchars($row['Cantidad_Incentivos']) . '</td>
+                                <td>' . htmlspecialchars($row['Valor_Total_Incentivos']) . '</td>
+                                <td>' . htmlspecialchars($row['Cantidad_Retenciones']) . '</td>
+                                <td>' . htmlspecialchars($row['Valor_Total_Retenciones']) . '</td>
+                                <td>' . htmlspecialchars($row['Valor_Total_Calculadora']) . '</td>
+                            </tr>';
+                    }
 
-        echo '</tbody>
-            </table>';
-    } else {
-        echo "No se encontraron resultados.";
-    }
+                    echo '</tbody>
+                        </table>';
+                } else {
+                    echo "No se encontraron resultados.";
+                }
 
-    $conn->close();
-?>
-
-
+                $conn->close();
+            ?>
         </div>
 
     </div>

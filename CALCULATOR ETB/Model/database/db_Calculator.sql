@@ -34,21 +34,13 @@ create table usuario(
     
 )AUTO_INCREMENT = 1;
 
-create table calculadora(
-
-	id_Cal INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	id_Usu INT NOT NULL, FOREIGN KEY (id_Usu) references usuario(id_Usu),
-	cant_Cal BIGINT
-    
-)AUTO_INCREMENT = 3000;
-
 CREATE TABLE usuario_Incentivos (
 	id_UI INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_Usu INT NOT NULL,
     id_Inc INT NOT NULL,
     FOREIGN KEY (id_Usu) REFERENCES usuario(id_Usu),
     FOREIGN KEY (id_Inc) REFERENCES incentivos(id_Inc)
-)AUTO_INCREMENT = 4000;
+)AUTO_INCREMENT = 3000;
 
 CREATE TABLE usuario_Retenciones (
 	id_UR INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -56,7 +48,7 @@ CREATE TABLE usuario_Retenciones (
     id_Ret INT NOT NULL,
     FOREIGN KEY (id_Usu) REFERENCES usuario(id_Usu),
     FOREIGN KEY (id_Ret) REFERENCES retenciones(id_Ret)
-)AUTO_INCREMENT = 5000;
+)AUTO_INCREMENT = 4000;
 
 CREATE VIEW vista_incentivos_usuario AS
 SELECT
@@ -103,6 +95,3 @@ INSERT INTO retenciones(cant_Ret, com_Ret) VALUES
 
 INSERT INTO usuario(id_Inc, id_Ret, nom_Usu, cel_Usu, usu_Usu, con_Usu, CantI_Usu, CantR_Usu) VALUES
 (1000, 2000, "Nikolas", 3167468392, "DK", 1234, 0, 0);
-
-INSERT INTO calculadora(id_Cal, id_Usu, cant_Cal) VALUES
-(3000, 1, 0);
