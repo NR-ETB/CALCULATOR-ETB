@@ -31,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     include('../../Model/database/conexion.php');
     include('../../Model/database/query/amount.php');
-    include('../../Model/database/query/export.php');
 
 ?>
 
@@ -566,9 +565,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ?>
 
                 Ganancias Totales: <span id="earn_Re">$<?php echo number_format($gananciasTotales, 2); ?></span></p>
-                <form method="POST" action="">
-                    <button id="add3" name="download" type="submit">Descargar</button>
-                </form>
+                <button id="add3" name="download" type="submit">Descargar</button>
                 <input id="election3" type="text" value="<?php echo htmlspecialchars($cant_Cal); ?>" readonly>
             </div>
 
@@ -599,10 +596,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
 
+            <?php
+    include('../../Model/database/conexion.php');
+
+    // Consulta SQL para obtener los datos
+    $sql = "
+        SELECT
+            u.nom_Usu AS Nombre,
+            u.cel_Usu AS Telefono,
+            COUNT(ui.id_Inc) AS Cantidad_Incentivos,
+            COALESCE(SUM(i.com_Inc), 0) AS Valor_Total_Incentivos,
+            COUNT(ur.id_Ret) AS Cantidad_Retenciones,
+            COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Retenciones,
+            COALESCE(SUM(i.com_Inc), 0) + COALESCE(SUM(r.com_Ret), 0) AS Valor_Total_Calculadora
+        FROM
+            usuario u
+        LEFT JOIN
+            usuario_incentivos ui ON u.id_Usu = ui.id_Usu
+        LEFT JOIN
+            incentivos i ON ui.id_Inc = i.id_Inc
+        LEFT JOIN
+            usuario_retenciones ur ON u.id_Usu = ur.id_Usu
+        LEFT JOIN
+            retenciones r ON ur.id_Ret = r.id_Ret
+        LEFT JOIN
+            calculadora c ON u.id_Usu = c.id_Usu
+        GROUP BY
+            u.id_Usu;
+    ";
+
+    $resultado = $conn->query($sql);
+
+    // Verificar si hay resultados
+    if ($resultado->num_rows > 0) {
+        // Crear la tabla HTML con estilo para hacerlo invisible
+        echo '<table id="dataTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Telefono</th>
+                        <th>Cantidad_Incentivos</th>
+                        <th>Valor_Total_Incentivos</th>
+                        <th>Cantidad_Retenciones</th>
+                        <th>Valor_Total_Retenciones</th>
+                        <th>Valor_Total_Calculadora</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+        // Mostrar los datos en la tabla
+        while ($row = $resultado->fetch_assoc()) {
+            echo '<tr>
+                    <td>' . htmlspecialchars($row['Nombre']) . '</td>
+                    <td>' . htmlspecialchars($row['Telefono']) . '</td>
+                    <td>' . htmlspecialchars($row['Cantidad_Incentivos']) . '</td>
+                    <td>' . htmlspecialchars($row['Valor_Total_Incentivos']) . '</td>
+                    <td>' . htmlspecialchars($row['Cantidad_Retenciones']) . '</td>
+                    <td>' . htmlspecialchars($row['Valor_Total_Retenciones']) . '</td>
+                    <td>' . htmlspecialchars($row['Valor_Total_Calculadora']) . '</td>
+                </tr>';
+        }
+
+        echo '</tbody>
+            </table>';
+    } else {
+        echo "No se encontraron resultados.";
+    }
+
+    $conn->close();
+?>
+
+
         </div>
 
     </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../../Controller/calcula.js"></script>
 </body>
 </html>

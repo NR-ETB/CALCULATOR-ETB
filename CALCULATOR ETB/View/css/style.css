@@ -112,7 +112,7 @@ button{
     text-align: center;
     font-family: 'Poppins', sans-serif;
 }
-.lis{
+.lis {
     background-color: var(--withe-etb);
     color: var(--orange-etb);
     font-size: 16px;
@@ -121,20 +121,22 @@ button{
     left: 405px;
     bottom: 40px;
     width: 200px;
-    overflow-y: scroll;
-    overflow-x: scroll;
+    max-height: 110px; /* Establecer una altura máxima */
+    overflow-y: auto;  /* Permitir el desplazamiento vertical */
+    overflow-x: hidden; /* Desactivar el desplazamiento horizontal */
 }
 .lis2{
     background-color: var(--withe-etb);
     color: var(--orange-etb);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     position: relative;
     left: 335px;
     bottom: 40px;
     width: 200px;
-    overflow-y: scroll;
-    overflow-x: scroll;
+    max-height: 110px; /* Establecer una altura máxima */
+    overflow-y: auto;  /* Permitir el desplazamiento vertical */
+    overflow-x: hidden; /* Desactivar el desplazamiento horizontal */
 }
 #election, #election2{
     position: relative;

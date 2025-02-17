@@ -61,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['download'])) {
 
             // Cerrar el flujo de salida
             fclose($salida);
-            exit();
         } else {
             echo "No se encontraron registros para el usuario con ID: " . htmlspecialchars($id_Usu);
         }
@@ -74,6 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['download'])) {
     // Cerrar la conexión a la base de datos
     $conn->close();
 } else {
-    echo "Acceso no autorizado.";
+    echo "Acceso no autorizados.";
 }
 ?>
